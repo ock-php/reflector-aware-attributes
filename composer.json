@@ -9,6 +9,9 @@
     ],
     "minimum-stability": "dev",
     "autoload": {
+        "files": [
+            "functions/functions.attributes.php"
+        ],
         "psr-4": {
             "Ock\\ReflectorAwareAttributes\\": "src"
         }
