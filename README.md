@@ -78,3 +78,62 @@ $attribute_instances = get_attributes($reflection_function, MyReflectorAwareAttr
 assert($attribute_instances[0] instanceof MyReflectorAwareAttribute);
 assert($attribute_instances[0]->reflector === $reflection_function);
 ```
+
+### Using AttributeReader.
+
+The AttributeReader class allows to support attribute types that do not use the mechanisms from this package.
+
+Assume you have an attribute class like this, coming from a 3rd party package:
+
+```php
+#[\Attribute(\Attribute::TARGET_CLASS)]
+class ThirdPartyAttribute {
+  public readonly \Reflector $reflector;
+}
+```
+
+You can create a custom instantiator that will populate the property.
+
+Ideally this should use the decorator pattern, so that multiple operations can be applied.
+
+```php
+use Ock\ReflectorAwareAttributes\Instantiator\AttributeInstantiatorInterface;
+use Ock\ReflectorAwareAttributes\Reader\AttributeReader;
+
+class MyInstantiator implements AttributeInstantiatorInterface {
+
+  public function __construct(
+    private readonly AttributeInstantiatorInterface $decorated,
+  ) {}
+
+  public function newInstance(
+    \ReflectionAttribute $attribute,
+    \ReflectionClassConstant|\ReflectionParameter|\ReflectionClass|\ReflectionProperty|\ReflectionFunctionAbstract $reflector,
+  ): object {
+    $instance = $this->decorated->newInstance($attribute, $reflector);
+    if ($instance instanceof ThirdPartyAttribute) {
+      $instance->reflector = $reflector;
+    }
+    return $instance;
+  }
+
+}
+```
+
+Now we can use a reader with this instantiator decorator to get the attribute instances.
+
+```php
+#[ThirdPartyAttribute]
+class C {}
+
+$reader = AttributeReader::basic()
+  ->withDecoratingInstantiator(
+    fn (AttributeInstantiatorInterface $decorated) => new MyInstantiator($decorated),
+  );
+
+$reflection_class = new \ReflectionClass(C::class);
+$instances = $reader->getInstances($reflection_class, ThirdPartyAttribute::class);
+
+assert($instances[0] instanceof ThirdPartyAttribute);
+assert($instances[0]->reflector === $reflection_class);
+```

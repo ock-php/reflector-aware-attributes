@@ -4,21 +4,31 @@ declare(strict_types=1);
 
 namespace Ock\ReflectorAwareAttributes\Tests;
 
+use Ock\ReflectorAwareAttributes\Reader\AttributeReader;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\OtherTestAttribute;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\ReflectorAwareConstructorTestAttribute;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\ReflectorAwareTestAttribute;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\TestAttribute;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\TestAttributeInterface;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\TestClassWithAttributes;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function Ock\ReflectorAwareAttributes\get_attributes;
 use function Ock\ReflectorAwareAttributes\get_raw_attributes;
 
 /**
- * @covers \Ock\ReflectorAwareAttributes\get_attributes()
- * @covers \Ock\ReflectorAwareAttributes\get_raw_attributes()
+ * Tests getting attribute instances from a reflector.
+ *
+ * (The two see statements must stay here for PhpStorm WI-81466.)
+ *
+ * @see get_attributes()
+ * @see get_raw_attributes()
  */
+#[CoversFunction('Ock\ReflectorAwareAttributes\get_attributes')]
+#[CoversFunction('Ock\ReflectorAwareAttributes\get_raw_attributes')]
+#[CoversClass(AttributeReader::class)]
 class GetAttributesTest extends TestCase {
 
   /**
@@ -31,29 +41,33 @@ class GetAttributesTest extends TestCase {
     $this->assertEquals([new TestAttribute('on a class')], $attributes);
   }
 
-  public function testSetReflector(): void {
+  #[DataProvider('providerGetDefaultAttributesFunction')]
+  public function testSetReflector(\Closure $get_attributes): void {
     $reflector = new \ReflectionClass(TestClassWithAttributes::class);
-    $attributes = get_attributes($reflector, ReflectorAwareTestAttribute::class);
+    $attributes = $get_attributes($reflector, ReflectorAwareTestAttribute::class);
     $this->assertSame($reflector, $attributes[0]->reflector);
   }
 
-  public function testNotSetReflector(): void {
+  #[DataProvider('providerGetBasicAttributesFunction')]
+  public function testNotSetReflector(\Closure $get_raw_attributes): void {
     $reflector = new \ReflectionClass(TestClassWithAttributes::class);
-    $attributes = get_raw_attributes($reflector, ReflectorAwareTestAttribute::class);
+    $attributes = $get_raw_attributes($reflector, ReflectorAwareTestAttribute::class);
     $this->assertNull($attributes[0]->reflector);
   }
 
-  public function testGetReflectorFromConstructor(): void {
+  #[DataProvider('providerGetDefaultAttributesFunction')]
+  public function testGetReflectorFromConstructor(\Closure $get_attributes): void {
     $reflector = new \ReflectionClass(TestClassWithAttributes::class);
-    [$attribute] = get_attributes($reflector, ReflectorAwareConstructorTestAttribute::class);
+    [$attribute] = $get_attributes($reflector, ReflectorAwareConstructorTestAttribute::class);
     $this->assertSame($reflector, $attribute->reflectorIfSet);
     $this->assertSame($reflector, $attribute->reflector);
     $this->assertNull($attribute->exception ?? NULL);
   }
 
-  public function testGetNoReflectorFromConstructor(): void {
+  #[DataProvider('providerGetBasicAttributesFunction')]
+  public function testGetNoReflectorFromConstructor(\Closure $get_raw_attributes): void {
     $reflector = new \ReflectionClass(TestClassWithAttributes::class);
-    [$raw_attribute] = get_raw_attributes($reflector, ReflectorAwareConstructorTestAttribute::class);
+    [$raw_attribute] = $get_raw_attributes($reflector, ReflectorAwareConstructorTestAttribute::class);
     $this->assertNull($raw_attribute->reflectorIfSet);
     $this->assertNull($raw_attribute->reflector ?? NULL);
     $this->assertNotNull($raw_attribute->exception);
@@ -121,8 +135,28 @@ class GetAttributesTest extends TestCase {
    */
   public static function providerGetAttributesFunction(): array {
     return [
-      'get_attributes' => [get_attributes(...)],
+      ...static::providerGetBasicAttributesFunction(),
+      ...static::providerGetDefaultAttributesFunction(),
+    ];
+  }
+
+  /**
+   * @return array<string, array{\Closure(\ReflectionClass|\ReflectionFunctionAbstract|\ReflectionParameter|\ReflectionProperty|\ReflectionClassConstant, class-string, int=): list<object>}>
+   */
+  public static function providerGetBasicAttributesFunction(): array {
+    return [
       'get_raw_attributes' => [get_raw_attributes(...)],
+      'basic reader' => [AttributeReader::basic()->getInstances(...)],
+    ];
+  }
+
+  /**
+   * @return array<string, array{\Closure(\ReflectionClass|\ReflectionFunctionAbstract|\ReflectionParameter|\ReflectionProperty|\ReflectionClassConstant, class-string, int=): list<object>}>
+   */
+  public static function providerGetDefaultAttributesFunction(): array {
+    return [
+      'get_attributes' => [get_attributes(...)],
+      'default reader' => [AttributeReader::default()->getInstances(...)],
     ];
   }
 
