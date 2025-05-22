@@ -35,7 +35,10 @@ class GetAttributesTest extends TestCase {
     $reflector = new \ReflectionClass(TestClassWithAttributes::class);
     $attributes = get_attributes($reflector, ReflectorAwareTestAttribute::class);
     $this->assertSame($reflector, $attributes[0]->reflector);
+  }
 
+  public function testNotSetReflector(): void {
+    $reflector = new \ReflectionClass(TestClassWithAttributes::class);
     $attributes = get_raw_attributes($reflector, ReflectorAwareTestAttribute::class);
     $this->assertNull($attributes[0]->reflector);
   }
@@ -46,7 +49,10 @@ class GetAttributesTest extends TestCase {
     $this->assertSame($reflector, $attribute->reflectorIfSet);
     $this->assertSame($reflector, $attribute->reflector);
     $this->assertNull($attribute->exception ?? NULL);
+  }
 
+  public function testGetNoReflectorFromConstructor(): void {
+    $reflector = new \ReflectionClass(TestClassWithAttributes::class);
     [$raw_attribute] = get_raw_attributes($reflector, ReflectorAwareConstructorTestAttribute::class);
     $this->assertNull($raw_attribute->reflectorIfSet);
     $this->assertNull($raw_attribute->reflector ?? NULL);
