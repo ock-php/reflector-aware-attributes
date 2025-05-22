@@ -1,0 +1,27 @@
+{
+    "name": "ock/reflector-aware-attributes",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andreas Hennings",
+            "email": "andreas@dqxtech.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Ock\\ReflectorAwareAttributes\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ock\\ReflectorAwareAttributes\\Tests\\": "tests/src"
+        }
+    },
+    "require": {
+        "php": ">=8.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5.38"
+    }
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         colors="true"
+         bootstrap="vendor/autoload.php"
+         displayDetailsOnIncompleteTests="true"
+         displayDetailsOnSkippedTests="true"
+         displayDetailsOnPhpunitDeprecations="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         failOnEmptyTestSuite="true"
+         failOnIncomplete="true"
+         failOnNotice="true"
+         failOnSkipped="true"
+         failOnPhpunitDeprecation="true"
+         failOnDeprecation="true"
+         failOnRisky="true"
+         failOnWarning="true"
+>
+  <php>
+    <ini name="error_reporting" value="32767"/>
+  </php>
+  <testsuites>
+    <testsuite name="default">
+      <directory>./tests/src</directory>
+    </testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <directory>./src/</directory>
+    </include>
+  </source>
+</phpunit>

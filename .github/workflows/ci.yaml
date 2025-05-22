@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  - push
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.3]
+        composer-flags: ['--prefer-lowest', '']
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json
+          coverage: none
+      - run: composer install --prefer-dist --no-interaction --no-progress
+      - run: composer update --no-progress ${{ matrix.composer-flags }}
+      - run: vendor/bin/phpunit

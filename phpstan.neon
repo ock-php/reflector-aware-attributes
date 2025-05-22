@@ -1,0 +1,11 @@
+parameters:
+  level: 9
+  treatPhpDocTypesAsCertain: false
+  paths:
+    - .
+  excludePaths:
+    - vendor
+    - .github
+  ignoreErrors:
+    # Assume that generic type is 'mixed' if not further specified.
+    - identifier: missingType.generics
