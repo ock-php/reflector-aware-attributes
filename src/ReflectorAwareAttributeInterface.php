@@ -9,13 +9,13 @@ interface ReflectorAwareAttributeInterface {
   /**
    * Sets the reflector where the attribute was found.
    *
-   * @param \Reflector $reflector
+   * @param \ReflectionClass|\ReflectionFunctionAbstract|\ReflectionParameter|\ReflectionProperty|\ReflectionClassConstant $reflector
    *   The place where the attribute was found.
    *
    * @throws \LogicException
    *   The attribute is not allowed here.
    *   There is no point in catching this, the developer must fix their program.
    */
-  public function setReflector(\Reflector $reflector): void;
+  public function setReflector(\ReflectionClass|\ReflectionFunctionAbstract|\ReflectionParameter|\ReflectionProperty|\ReflectionClassConstant $reflector): void;
 
 }
