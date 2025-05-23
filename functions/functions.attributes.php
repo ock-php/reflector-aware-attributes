@@ -32,7 +32,10 @@ function get_attributes(
   string $name,
   int $flags = \ReflectionAttribute::IS_INSTANCEOF,
 ): array {
-  $instances = get_raw_attributes($reflector, $name, $flags);
+  $instances = AttributeConstructor::callWithReflector(
+    fn () => get_raw_attributes($reflector, $name, $flags),
+    $reflector,
+  );
   foreach ($instances as $instance) {
     if ($instance instanceof ReflectorAwareAttributeInterface) {
       $instance->setReflector($reflector);

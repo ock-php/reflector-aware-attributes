@@ -5,12 +5,14 @@ declare(strict_types = 1);
 namespace Ock\ReflectorAwareAttributes\Tests\Fixtures;
 
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\OtherTestAttribute;
+use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\ReflectorAwareConstructorTestAttribute;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\ReflectorAwareTestAttribute;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\TestAttribute;
 
 #[TestAttribute('on a class')]
 #[OtherTestAttribute('on a class')]
 #[ReflectorAwareTestAttribute]
+#[ReflectorAwareConstructorTestAttribute('on a class')]
 class TestClassWithAttributes {
 
   #[TestAttribute('on a class constant')]

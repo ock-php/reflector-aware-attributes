@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ock\ReflectorAwareAttributes\Tests;
 
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\OtherTestAttribute;
+use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\ReflectorAwareConstructorTestAttribute;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\ReflectorAwareTestAttribute;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\TestAttribute;
 use Ock\ReflectorAwareAttributes\Tests\Fixtures\Attribute\TestAttributeInterface;
@@ -37,6 +38,20 @@ class GetAttributesTest extends TestCase {
 
     $attributes = get_raw_attributes($reflector, ReflectorAwareTestAttribute::class);
     $this->assertNull($attributes[0]->reflector);
+  }
+
+  public function testGetReflectorFromConstructor(): void {
+    $reflector = new \ReflectionClass(TestClassWithAttributes::class);
+    [$attribute] = get_attributes($reflector, ReflectorAwareConstructorTestAttribute::class);
+    $this->assertSame($reflector, $attribute->reflectorIfSet);
+    $this->assertSame($reflector, $attribute->reflector);
+    $this->assertNull($attribute->exception ?? NULL);
+
+    [$raw_attribute] = get_raw_attributes($reflector, ReflectorAwareConstructorTestAttribute::class);
+    $this->assertNull($raw_attribute->reflectorIfSet);
+    $this->assertNull($raw_attribute->reflector ?? NULL);
+    $this->assertNotNull($raw_attribute->exception);
+    $this->assertSame(\LogicException::class, get_class($raw_attribute->exception));
   }
 
   /**
