@@ -2,6 +2,14 @@
 
 Provides mechanisms for attribute objects to know about the symbol they are attached to.
 
+## Motivation
+
+An attribute may want to know about the symbol it describes, to:
+
+- Perform validation, and throw an exception if it is attached to the wrong symbol.
+- Populate default values based on the symbol.
+  E.g., an attribute attached to a parameter may populate a property value based on the parameter type.
+
 ## Usage
 
 ### Using AttributeConstructor::getReflector().
@@ -38,8 +46,9 @@ use function Ock\ReflectorAwareAttributes\get_attributes;
 
 $reflection_class = new \ReflectionClass(MyClass::class);
 $attribute_instances = get_attributes($reflection_class, MyAttribute::class);
+
 assert($attribute_instances[0] instanceof MyAttribute);
-assert($attribute_instances[0]->reflector === $reflection_function);
+assert($attribute_instances[0]->reflector === $reflection_class);
 ```
 
 ### Using the interface with ->setReflector().
